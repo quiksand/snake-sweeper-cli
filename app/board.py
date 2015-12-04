@@ -16,7 +16,7 @@ class Board(object):
         self.columns = columns
         self.generate_new_board()
         self.calc_hints()
-        self.print_board(' ','.')
+        self.print_board()
 
     def generate_new_board(self):
         '''generates the board with mines and placeholders for numbers'''
@@ -66,7 +66,3 @@ class Board(object):
                                 self.board[i+k][j+l] = str(int(self.board[i+k][j+l]) + 1)
                 else:
                     continue
-
-
-#DELETE
-test = Board()
