@@ -4,7 +4,7 @@ import random
 class Board(object):
     """a mine sweeper board"""
     EMPTY_SPACE = "0"
-    MINE_SPACE = "."
+    MINE_SPACE = "*"
 
     def __init__(self, rows, columns):
         self.board = ""
