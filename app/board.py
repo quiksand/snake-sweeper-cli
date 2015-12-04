@@ -5,40 +5,48 @@ class Board(object):
     """a mine sweeper board"""
     EMPTY_SPACE = "0"
     MINE_SPACE = "*"
+    DEFAULT_ROWS = 9
+    DEFAULT_COLS = 9
+    DEFAULT_MINES = 10
 
-    def __init__(self, rows, columns):
+    def __init__(self, rows = DEFAULT_ROWS, columns = DEFAULT_COLS, mines = DEFAULT_MINES):
         self.board = ""
-        self.actual_mines = 0
+        self.mines = mines
         self.rows = rows
         self.columns = columns
-        self.possible_mines = random.randint(1, (rows * 2))
         self.generate_new_board()
         self.calc_hints()
-        self.print_board()
+        self.print_board(' ','.')
 
     def generate_new_board(self):
         '''generates the board with mines and placeholders for numbers'''
-        new_board_arr = []
-        possible_mines = self.possible_mines
-        for i in range(self.rows):
-            row = []
-            for j in range(self.columns):
-                if round(random.random(), 2) >= 0.4:
-                    row.append(self.EMPTY_SPACE)
-                else:
-                    if possible_mines:
-                        row.append(self.MINE_SPACE)
-                        possible_mines -= 1
-                    else:
-                        row.append(self.EMPTY_SPACE)
-            new_board_arr.append(row)
-        self.board = new_board_arr
+        # create local variables for better readability
+        rows = self.rows
+        cols = self.columns
+        mines = self.mines
+        # generate a string of all zeroes
+        self.board = ((rows*cols)-mines) * self.EMPTY_SPACE
+        # seed the zero string with mines
+        while(mines):
+            index = random.randint(0,len(self.board))
+            self.board = self.board[:index] + self.MINE_SPACE + self.board[index:]
+            mines -= 1
+        # break the string into rows
+        new_arr = []
+        k = 0
+        for i in range(rows):
+            new_arr.append([])
+            for j in range(cols):
+                new_arr[i] += self.board[k]
+                k += 1
 
-    def print_board(self):
+        self.board = new_arr
+
+    def print_board(self, zeroes = EMPTY_SPACE, mines = MINE_SPACE):
         '''pretty-prints the board'''
         new_arr = []
         for row in self.board:
-            new_arr.append(' '.join(row))
+            new_arr.append(' '.join(row).replace(self.EMPTY_SPACE, zeroes).replace(self.MINE_SPACE, mines))
         for row_str in new_arr:
             print(row_str)
         
@@ -58,3 +66,7 @@ class Board(object):
                                 self.board[i+k][j+l] = str(int(self.board[i+k][j+l]) + 1)
                 else:
                     continue
+
+
+#DELETE
+test = Board()
