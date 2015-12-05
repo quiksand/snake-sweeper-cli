@@ -17,7 +17,7 @@ class Board(object):
         self.first_click = fclick
         self.generate_new_board()
         self.calc_hints()
-        self.print_board(' ','.')
+        self.print_board()
 
     def generate_new_board(self):
         '''generates the board with mines and placeholders for numbers'''
@@ -36,8 +36,8 @@ class Board(object):
         # clear the first-clicked space if necessary
         if(self.board[fspace] == self.MINE_SPACE):
             index = self.board.index(self.EMPTY_SPACE)
-            self.board = self.board[:fspace] + '0' + self.board[fspace+1:]
-            self.board = self.board[:index] + '*' + self.board[index+1:]
+            self.board = self.board[:fspace] + self.EMPTY_SPACE + self.board[fspace+1:]
+            self.board = self.board[:index] + self.MINE_SPACE + self.board[index+1:]
         # break the string into rows
         new_arr = []
         k = 0
@@ -45,7 +45,7 @@ class Board(object):
             new_arr.append([])
             for j in range(cols):
                 new_arr[i] += self.board[k]
-                k += 1            
+                k += 1
         self.board = new_arr
 
     def print_board(self, zeroes = EMPTY_SPACE, mines = MINE_SPACE):
