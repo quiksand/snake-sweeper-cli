@@ -9,14 +9,15 @@ class Board(object):
     DEFAULT_COLS = 9
     DEFAULT_MINES = 10
 
-    def __init__(self, rows = DEFAULT_ROWS, columns = DEFAULT_COLS, mines = DEFAULT_MINES):
+    def __init__(self, rows = DEFAULT_ROWS, columns = DEFAULT_COLS, mines = DEFAULT_MINES, fclick = [4,4]):
         self.board = ""
         self.mines = mines
         self.rows = rows
         self.columns = columns
+        self.first_click = fclick
         self.generate_new_board()
         self.calc_hints()
-        self.print_board()
+        self.print_board(' ','.')
 
     def generate_new_board(self):
         '''generates the board with mines and placeholders for numbers'''
@@ -24,6 +25,7 @@ class Board(object):
         rows = self.rows
         cols = self.columns
         mines = self.mines
+        fspace = (self.first_click[0] * (cols)) + self.first_click[1]
         # generate a string of all zeroes
         self.board = ((rows*cols)-mines) * self.EMPTY_SPACE
         # seed the zero string with mines
@@ -31,6 +33,11 @@ class Board(object):
             index = random.randint(0,len(self.board))
             self.board = self.board[:index] + self.MINE_SPACE + self.board[index:]
             mines -= 1
+        # clear the first-clicked space if necessary
+        if(self.board[fspace] == self.MINE_SPACE):
+            index = self.board.index(self.EMPTY_SPACE)
+            self.board = self.board[:fspace] + '0' + self.board[fspace+1:]
+            self.board = self.board[:index] + '*' + self.board[index+1:]
         # break the string into rows
         new_arr = []
         k = 0
@@ -38,8 +45,7 @@ class Board(object):
             new_arr.append([])
             for j in range(cols):
                 new_arr[i] += self.board[k]
-                k += 1
-
+                k += 1            
         self.board = new_arr
 
     def print_board(self, zeroes = EMPTY_SPACE, mines = MINE_SPACE):
