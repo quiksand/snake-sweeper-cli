@@ -1,5 +1,6 @@
 # internal dependencies
 import random
+from numpy import reshape as reshape
 
 class Board(object):
     """a mine sweeper board"""
@@ -10,7 +11,7 @@ class Board(object):
     DEFAULT_MINES = 10
 
     def __init__(self, rows = DEFAULT_ROWS, columns = DEFAULT_COLS, mines = DEFAULT_MINES, fclick = [4,4]):
-        self.board = ""
+        self.board = []
         self.mines = mines
         self.rows = rows
         self.columns = columns
@@ -25,28 +26,20 @@ class Board(object):
         rows = self.rows
         cols = self.columns
         mines = self.mines
-        fspace = (self.first_click[0] * (cols)) + self.first_click[1]
-        # generate a string of all zeroes
-        self.board = ((rows*cols)-mines) * self.EMPTY_SPACE
-        # seed the zero string with mines
-        while(mines):
-            index = random.randint(0,len(self.board))
-            self.board = self.board[:index] + self.MINE_SPACE + self.board[index:]
-            mines -= 1
+        fclick = (self.first_click[0] * (cols)) + self.first_click[1]
+        #seed list with appropriate numbers of mines and spaces
+        for i in range(rows*cols-mines):
+            self.board.append(self.EMPTY_SPACE)
+        for j in range(mines):
+            self.board.append(self.MINE_SPACE)
+        random.shuffle(self.board)
         # clear the first-clicked space if necessary
-        if(self.board[fspace] == self.MINE_SPACE):
-            index = self.board.index(self.EMPTY_SPACE)
-            self.board = self.board[:fspace] + self.EMPTY_SPACE + self.board[fspace+1:]
-            self.board = self.board[:index] + self.MINE_SPACE + self.board[index+1:]
-        # break the string into rows
-        new_arr = []
-        k = 0
-        for i in range(rows):
-            new_arr.append([])
-            for j in range(cols):
-                new_arr[i] += self.board[k]
-                k += 1
-        self.board = new_arr
+        if(self.board[fclick] == self.MINE_SPACE):
+            first_zero = self.board.index(self.EMPTY_SPACE)
+            self.board[first_zero] = self.MINE_SPACE
+            self.board[fclick] = self.EMPTY_SPACE
+        #reshape the board into rows and columns
+        self.board = reshape(self.board, (rows, cols))
 
     def print_board(self, zeroes = EMPTY_SPACE, mines = MINE_SPACE):
         '''pretty-prints the board'''
@@ -55,7 +48,7 @@ class Board(object):
             new_arr.append(' '.join(row).replace(self.EMPTY_SPACE, zeroes).replace(self.MINE_SPACE, mines))
         for row_str in new_arr:
             print(row_str)
-        
+
     def calc_hints(self):
         '''generate numbers after a board is generated'''
         for i in range(self.rows):
